@@ -1,0 +1,34 @@
+[
+	{
+		"id":      1,
+		"title":   "Blog 1",
+		"body":    "lorem ipsum dolor set",
+		"author":  "Aristotle",
+		"created": "01-01-0001",
+		"tags":    ["philosophy, life"]
+	},
+	{
+		"id":      2,
+		"title":   "Blog 2",
+		"body":    "lorem ipsum dolor set",
+		"author":  "Napoleon Bonaparte",
+		"created": "22-07-1800",
+		"tags":    ["history"]
+	},
+	{
+		"id":      3,
+		"title":   "Blog 3",
+		"body":    "lorem ipsum dolor set",
+		"author":  "Carl Jung",
+		"created": "11-11-1910",
+		"tags":    ["life, psychology"]
+	},
+	{
+		"id":      4,
+		"title":   "Blog 4",
+		"body":    "lorem ipsum dolor set",
+		"author":  "Carl Jung",
+		"created": "17-02-1912",
+		"tags":    ["psychology, relationships"]
+	}
+]
