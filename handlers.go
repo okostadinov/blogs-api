@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"path"
-	"strconv"
 )
 
 // "getBlogs" fetches all blogs and returns them as a json
@@ -21,19 +19,11 @@ func (app *Application) getBlogs(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(payload)
+	writeJSON(w, payload)
 }
 
 // "viewBlog" fetches a blog based on ID and returns it as a json
-func (app *Application) viewBlog(w http.ResponseWriter, r *http.Request) {
-	blogId := path.Base(r.URL.Path)
-	id, err := strconv.Atoi(blogId)
-	if err != nil {
-		http.Error(w, "invalid blog id", http.StatusBadRequest)
-		return
-	}
-
+func (app *Application) viewBlog(w http.ResponseWriter, r *http.Request, id int) {
 	blog, err := app.bm.get(id)
 	if err != nil {
 		if errors.Is(err, &BlogNotFoundError{}) {
@@ -50,8 +40,7 @@ func (app *Application) viewBlog(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(payload)
+	writeJSON(w, payload)
 }
 
 // "addBlog" creates a new blog based on request body and returns it as json
@@ -77,22 +66,14 @@ func (app *Application) addBlog(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.bm.save()
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(payload)
+	writeJSON(w, payload)
 }
 
 // "editBlog" updates a blog based on ID and returns it as a json
-func (app *Application) editBlog(w http.ResponseWriter, r *http.Request) {
-	blogId := path.Base(r.URL.Path)
-	id, err := strconv.Atoi(blogId)
-	if err != nil {
-		http.Error(w, "invalid blog id", http.StatusBadRequest)
-		return
-	}
-
+func (app *Application) editBlog(w http.ResponseWriter, r *http.Request, id int) {
 	var data Blog
 
-	err = json.NewDecoder(r.Body).Decode(&data)
+	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -109,21 +90,13 @@ func (app *Application) editBlog(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.bm.update(blog, data)
-	payload, _ := json.MarshalIndent(blog, "", "\t")
 	app.bm.save()
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(payload)
+	payload, _ := json.MarshalIndent(blog, "", "\t")
+	writeJSON(w, payload)
 }
 
 // "removeBlog" deletes a blog based on ID and returns it as a json
-func (app *Application) removeBlog(w http.ResponseWriter, r *http.Request) {
-	blogId := path.Base(r.URL.Path)
-	id, err := strconv.Atoi(blogId)
-	if err != nil {
-		http.Error(w, "invalid blog id", http.StatusBadRequest)
-		return
-	}
-
+func (app *Application) removeBlog(w http.ResponseWriter, r *http.Request, id int) {
 	blog, err := app.bm.delete(id)
 	if err != nil {
 		if errors.Is(err, &BlogNotFoundError{}) {
@@ -134,8 +107,7 @@ func (app *Application) removeBlog(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	payload, _ := json.MarshalIndent(blog, "", "\t")
 	app.bm.save()
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(payload)
+	payload, _ := json.MarshalIndent(blog, "", "\t")
+	writeJSON(w, payload)
 }

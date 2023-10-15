@@ -16,10 +16,10 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", app.getBlogs)
-	mux.HandleFunc("/blog/", app.viewBlog)
+	mux.HandleFunc("/blog/", makeHandler(app.viewBlog))
 	mux.HandleFunc("/add", app.addBlog)
-	mux.HandleFunc("/edit/", app.editBlog)
-	mux.HandleFunc("/remove/", app.removeBlog)
+	mux.HandleFunc("/edit/", makeHandler(app.editBlog))
+	mux.HandleFunc("/remove/", makeHandler(app.removeBlog))
 
 	fmt.Println("Listening on http://localhost:4000")
 	err := http.ListenAndServe(":4000", mux)

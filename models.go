@@ -60,35 +60,35 @@ func (bm *BlogsModel) get(id int) (*Blog, error) {
 }
 
 // "update" updates a blog based on provided data
-func (bm *BlogsModel) update(bpr *Blog, newBlog Blog) {
-	if newBlog.Title != nil && *newBlog.Title != "" {
-		bpr.Title = newBlog.Title
+func (bm *BlogsModel) update(blog *Blog, data Blog) {
+	if data.Title != nil && *data.Title != "" {
+		blog.Title = data.Title
 	}
-	if newBlog.Body != nil && *newBlog.Body != "" {
-		bpr.Body = newBlog.Body
+	if data.Body != nil && *data.Body != "" {
+		blog.Body = data.Body
 	}
-	if newBlog.Author != nil && *newBlog.Author != "" {
-		bpr.Author = newBlog.Author
+	if data.Author != nil && *data.Author != "" {
+		blog.Author = data.Author
 	}
-	if newBlog.Tags != nil && len(*newBlog.Tags) != 0 {
-		bpr.Tags = newBlog.Tags
+	if data.Tags != nil && len(*data.Tags) != 0 {
+		blog.Tags = data.Tags
 	}
 }
 
 // "create" creates a blog based on provided data and returns it
-func (bm *BlogsModel) create(newBlog *Blog) (*Blog, error) {
+func (bm *BlogsModel) create(data *Blog) (*Blog, error) {
 	var blog Blog
 
-	if newBlog.Title == nil || *newBlog.Title == "" {
+	if data.Title == nil || *data.Title == "" {
 		return nil, fmt.Errorf("Blog title is required")
 	}
-	if newBlog.Body == nil || *newBlog.Body == "" {
+	if data.Body == nil || *data.Body == "" {
 		return nil, fmt.Errorf("Blog body is required")
 	}
-	if newBlog.Author == nil || *newBlog.Author == "" {
+	if data.Author == nil || *data.Author == "" {
 		return nil, fmt.Errorf("Blog author is required")
 	}
-	if newBlog.Tags == nil || len(*newBlog.Tags) == 0 {
+	if data.Tags == nil || len(*data.Tags) == 0 {
 		return nil, fmt.Errorf("Blog must contains at least one tag")
 	}
 
@@ -96,7 +96,7 @@ func (bm *BlogsModel) create(newBlog *Blog) (*Blog, error) {
 	created := time.Now().Format(DDMMYYYY)
 	blog.Created = &created
 
-	bm.update(&blog, *newBlog)
+	bm.update(&blog, *data)
 	bm.blogs = append(bm.blogs, blog)
 	return &blog, nil
 }
