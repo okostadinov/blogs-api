@@ -15,11 +15,8 @@ func main() {
 	app.bm.load()
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", app.getBlogs)
-	mux.HandleFunc("/blog/", makeHandler(app.viewBlog))
-	mux.HandleFunc("/add", app.addBlog)
-	mux.HandleFunc("/edit/", makeHandler(app.editBlog))
-	mux.HandleFunc("/remove/", makeHandler(app.removeBlog))
+	mux.HandleFunc("/blogs", app.blogsHandler)
+	mux.HandleFunc("/blogs/", app.blogsHandler)
 
 	fmt.Println("Listening on http://localhost:4000")
 	err := http.ListenAndServe(":4000", mux)
