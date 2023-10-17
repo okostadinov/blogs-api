@@ -12,12 +12,12 @@ import (
 const DDMMYYYY = "02-01-2006"
 
 type Blog struct {
-	ID      int       `json:"id"`
-	Title   *string   `json:"title,omitempty"`
-	Body    *string   `json:"body,omitempty"`
-	Author  *string   `json:"author,omitempty"`
-	Created *string   `json:"created"`
-	Tags    *[]string `json:"tags,omitempty"`
+	ID      int      `json:"id"`
+	Title   string   `json:"title"`
+	Body    string   `json:"body"`
+	Author  string   `json:"author"`
+	Created string   `json:"created"`
+	Tags    []string `json:"tags"`
 }
 
 type BlogsModel struct {
@@ -61,19 +61,16 @@ func (bm *BlogsModel) get(id int) (*Blog, error) {
 
 // "update" updates a blog based on provided data
 func (bm *BlogsModel) update(blog *Blog, data Blog) {
-	if data.Title != nil && *data.Title != "" {
+	switch {
+	case data.Title != "":
 		blog.Title = data.Title
-	}
-	if data.Body != nil && *data.Body != "" {
+	case data.Body != "":
 		blog.Body = data.Body
-	}
-	if data.Author != nil && *data.Author != "" {
+	case data.Author != "":
 		blog.Author = data.Author
-	}
-	if data.Tags != nil && len(*data.Tags) != 0 {
+	case len(data.Tags) > 0:
 		blog.Tags = data.Tags
 	}
-
 	bm.save()
 }
 
@@ -81,35 +78,24 @@ func (bm *BlogsModel) update(blog *Blog, data Blog) {
 func (bm *BlogsModel) create(data *Blog) (*Blog, error) {
 	var blog Blog
 
-	if data.Title == nil || *data.Title == "" {
+	switch {
+	case data.Title == "":
 		return nil, fmt.Errorf("Blog title is required")
-	} else {
-		blog.Title = data.Title
-	}
-
-	if data.Body == nil || *data.Body == "" {
+	case data.Body == "":
 		return nil, fmt.Errorf("Blog body is required")
-	} else {
-		blog.Body = data.Body
-	}
-
-	if data.Author == nil || *data.Author == "" {
+	case data.Author == "":
 		return nil, fmt.Errorf("Blog author is required")
-	} else {
-		blog.Author = data.Author
-	}
-
-	if data.Tags == nil || len(*data.Tags) == 0 {
+	case len(data.Tags) == 0:
 		return nil, fmt.Errorf("Blog must contain at least one tag")
-	} else {
+	default:
+		blog.Title = data.Title
+		blog.Body = data.Body
+		blog.Author = data.Author
 		blog.Tags = data.Tags
 	}
 
 	blog.ID = bm.blogs[len(bm.blogs)-1].ID + 1
-
-	created := time.Now().Format(DDMMYYYY)
-	blog.Created = &created
-
+	blog.Created = time.Now().Format(DDMMYYYY)
 	bm.blogs = append(bm.blogs, blog)
 	bm.save()
 	return &blog, nil

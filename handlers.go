@@ -54,7 +54,7 @@ func (app *Application) view(w http.ResponseWriter, r *http.Request, id int) {
 		return
 	}
 
-	payload, err := json.MarshalIndent(*blog, "", "\t")
+	payload, err := json.MarshalIndent(&blog, "", "\t")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -79,7 +79,7 @@ func (app *Application) add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	payload, err := json.MarshalIndent(blog, "", "\t")
+	payload, err := json.MarshalIndent(&blog, "", "\t")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -110,7 +110,7 @@ func (app *Application) edit(w http.ResponseWriter, r *http.Request, id int) {
 	}
 
 	app.bm.update(blog, data)
-	payload, _ := json.MarshalIndent(blog, "", "\t")
+	payload, _ := json.MarshalIndent(&blog, "", "\t")
 	w.Write(payload)
 }
 
@@ -126,6 +126,6 @@ func (app *Application) remove(w http.ResponseWriter, r *http.Request, id int) {
 		return
 	}
 
-	payload, _ := json.MarshalIndent(blog, "", "\t")
+	payload, _ := json.MarshalIndent(&blog, "", "\t")
 	w.Write(payload)
 }
