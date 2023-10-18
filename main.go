@@ -12,7 +12,6 @@ type Application struct {
 
 func main() {
 	app := &Application{}
-	app.bm.load()
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/blogs", app.blogsHandler)

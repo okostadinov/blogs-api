@@ -19,7 +19,7 @@ func (err *BlogNotFoundError) Error() string {
 }
 
 // decorator used to extract the ID param from the url and call the specified handler passing it forward
-func idExtracter(w http.ResponseWriter, r *http.Request, fn func(w http.ResponseWriter, r *http.Request, id int)) {
+func idExtractor(w http.ResponseWriter, r *http.Request, fn func(w http.ResponseWriter, r *http.Request, id int)) {
 	id, err := strconv.Atoi(path.Base(r.URL.Path))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

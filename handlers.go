@@ -18,13 +18,13 @@ func (app *Application) blogsHandler(w http.ResponseWriter, r *http.Request) {
 		app.add(w, r)
 		return
 	case r.Method == http.MethodGet && blogReg.MatchString(r.URL.Path):
-		idExtracter(w, r, app.view)
+		idExtractor(w, r, app.view)
 		return
 	case r.Method == http.MethodPut && blogReg.MatchString(r.URL.Path):
-		idExtracter(w, r, app.edit)
+		idExtractor(w, r, app.edit)
 		return
 	case r.Method == http.MethodDelete && blogReg.MatchString(r.URL.Path):
-		idExtracter(w, r, app.remove)
+		idExtractor(w, r, app.remove)
 		return
 	default:
 		http.NotFound(w, r)
@@ -32,8 +32,13 @@ func (app *Application) blogsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// "list" fetches all blogs and returns them as a json
+// fetches all blogs and returns them as a JSON
 func (app *Application) list(w http.ResponseWriter, r *http.Request) {
+	if len(app.bm.blogs) == 0 {
+		http.NotFound(w, r)
+		return
+	}
+
 	payload, err := json.MarshalIndent(app.bm.blogs, "", "\t")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -42,7 +47,7 @@ func (app *Application) list(w http.ResponseWriter, r *http.Request) {
 	w.Write(payload)
 }
 
-// "view" fetches a blog based on ID and returns it as a json
+// fetches a blog based on ID and returns it as a JSON
 func (app *Application) view(w http.ResponseWriter, r *http.Request, id int) {
 	blog, err := app.bm.get(id)
 	if err != nil {
@@ -63,7 +68,7 @@ func (app *Application) view(w http.ResponseWriter, r *http.Request, id int) {
 	w.Write(payload)
 }
 
-// "add" creates a new blog based on request body and returns it as json
+// creates a new blog based on request body and returns it as JSON
 func (app *Application) add(w http.ResponseWriter, r *http.Request) {
 	var data Blog
 
@@ -89,7 +94,7 @@ func (app *Application) add(w http.ResponseWriter, r *http.Request) {
 	w.Write(payload)
 }
 
-// "edit" updates a blog based on ID and returns it as a json
+// updates a blog based on ID and returns it as a JSON
 func (app *Application) edit(w http.ResponseWriter, r *http.Request, id int) {
 	var data Blog
 
@@ -114,7 +119,7 @@ func (app *Application) edit(w http.ResponseWriter, r *http.Request, id int) {
 	w.Write(payload)
 }
 
-// "remove" deletes a blog based on ID and returns it as a json
+// deletes a blog based on ID and returns it as a JSON
 func (app *Application) remove(w http.ResponseWriter, r *http.Request, id int) {
 	blog, err := app.bm.delete(id)
 	if err != nil {

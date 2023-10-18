@@ -24,21 +24,7 @@ type BlogsModel struct {
 	blogs []Blog
 }
 
-// "load" populates the bm with blogs from a json file
-func (bm *BlogsModel) load() {
-	payload, err := os.ReadFile("./blogs.json")
-	if err != nil {
-		os.WriteFile("blogs.json", nil, 0666)
-		return
-	}
-
-	err = json.Unmarshal(payload, &bm.blogs)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-// "save" saves the current blogs to a json file
+// saves the current blogs to a json file
 func (bm *BlogsModel) save() {
 	payload, err := json.MarshalIndent(bm.blogs, "", "\t")
 	if err != nil {
@@ -48,7 +34,7 @@ func (bm *BlogsModel) save() {
 	os.WriteFile("blogs.json", payload, 0666)
 }
 
-// "get" retrieves a blog based on ID
+// retrieves a blog based on ID
 func (bm *BlogsModel) get(id int) (*Blog, error) {
 	for i, blog := range bm.blogs {
 		if blog.ID == id {
@@ -59,7 +45,7 @@ func (bm *BlogsModel) get(id int) (*Blog, error) {
 	return nil, &BlogNotFoundError{}
 }
 
-// "update" updates a blog based on provided data
+// updates a blog based on provided data
 func (bm *BlogsModel) update(blog *Blog, data Blog) {
 	switch {
 	case data.Title != "":
@@ -74,7 +60,7 @@ func (bm *BlogsModel) update(blog *Blog, data Blog) {
 	bm.save()
 }
 
-// "create" creates a blog based on provided data and returns it
+// creates a blog based on provided data and returns it
 func (bm *BlogsModel) create(data *Blog) (*Blog, error) {
 	var blog Blog
 
@@ -94,14 +80,18 @@ func (bm *BlogsModel) create(data *Blog) (*Blog, error) {
 		blog.Tags = data.Tags
 	}
 
-	blog.ID = bm.blogs[len(bm.blogs)-1].ID + 1
+	if bm.blogs == nil {
+		blog.ID = 1
+	} else {
+		blog.ID = bm.blogs[len(bm.blogs)-1].ID + 1
+	}
 	blog.Created = time.Now().Format(DDMMYYYY)
 	bm.blogs = append(bm.blogs, blog)
 	bm.save()
 	return &blog, nil
 }
 
-// "delete" deletes a blog based on its ID
+// deletes a blog based on its ID
 func (bm *BlogsModel) delete(id int) (*Blog, error) {
 	for i, blog := range bm.blogs {
 		if blog.ID == id {
