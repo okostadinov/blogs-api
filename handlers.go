@@ -92,6 +92,10 @@ func (app *Application) add(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	w.Write(payload)
+
+	if app.saveBlogs {
+		app.save()
+	}
 }
 
 // updates a blog based on ID and returns it as a JSON
@@ -117,6 +121,10 @@ func (app *Application) edit(w http.ResponseWriter, r *http.Request, id int) {
 	app.bm.update(blog, data)
 	payload, _ := json.MarshalIndent(&blog, "", "\t")
 	w.Write(payload)
+
+	if app.saveBlogs {
+		app.save()
+	}
 }
 
 // deletes a blog based on ID and returns it as a JSON
@@ -133,4 +141,8 @@ func (app *Application) remove(w http.ResponseWriter, r *http.Request, id int) {
 
 	payload, _ := json.MarshalIndent(&blog, "", "\t")
 	w.Write(payload)
+
+	if app.saveBlogs {
+		app.save()
+	}
 }

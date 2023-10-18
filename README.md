@@ -43,6 +43,11 @@ curl http://localhost:4000/blogs/3 \
 --request "DELETE"
 ```
 
+### Flags
+* `-addr` to specify a port (:4000 by default)
+* `-sample` to load the sample blogs into the app store
+* `-save` to save the generated data into a tmp file
+
 ### TODO
 
 * add tests

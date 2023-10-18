@@ -1,10 +1,7 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"log"
-	"os"
 	"slices"
 	"time"
 )
@@ -22,16 +19,6 @@ type Blog struct {
 
 type BlogsModel struct {
 	blogs []Blog
-}
-
-// saves the current blogs to a json file
-func (bm *BlogsModel) save() {
-	payload, err := json.MarshalIndent(bm.blogs, "", "\t")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	os.WriteFile("blogs.json", payload, 0666)
 }
 
 // retrieves a blog based on ID
@@ -57,7 +44,6 @@ func (bm *BlogsModel) update(blog *Blog, data Blog) {
 	case len(data.Tags) > 0:
 		blog.Tags = data.Tags
 	}
-	bm.save()
 }
 
 // creates a blog based on provided data and returns it
@@ -87,7 +73,6 @@ func (bm *BlogsModel) create(data *Blog) (*Blog, error) {
 	}
 	blog.Created = time.Now().Format(DDMMYYYY)
 	bm.blogs = append(bm.blogs, blog)
-	bm.save()
 	return &blog, nil
 }
 
@@ -96,7 +81,6 @@ func (bm *BlogsModel) delete(id int) (*Blog, error) {
 	for i, blog := range bm.blogs {
 		if blog.ID == id {
 			bm.blogs = slices.Delete(bm.blogs, i, i+1)
-			bm.save()
 			return &blog, nil
 		}
 	}
