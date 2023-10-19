@@ -34,12 +34,12 @@ func (app *Application) blogsHandler(w http.ResponseWriter, r *http.Request) {
 
 // fetches all blogs and returns them as a JSON
 func (app *Application) list(w http.ResponseWriter, r *http.Request) {
-	if len(app.bm.blogs) == 0 {
+	if len(app.blogs.store) == 0 {
 		http.NotFound(w, r)
 		return
 	}
 
-	payload, err := json.MarshalIndent(app.bm.blogs, "", "\t")
+	payload, err := json.MarshalIndent(app.blogs.store, "", "\t")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -49,7 +49,7 @@ func (app *Application) list(w http.ResponseWriter, r *http.Request) {
 
 // fetches a blog based on ID and returns it as a JSON
 func (app *Application) view(w http.ResponseWriter, r *http.Request, id int) {
-	blog, err := app.bm.get(id)
+	blog, err := app.blogs.get(id)
 	if err != nil {
 		if errors.Is(err, &BlogNotFoundError{}) {
 			http.NotFound(w, r)
@@ -78,7 +78,7 @@ func (app *Application) add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	blog, err := app.bm.create(data)
+	blog, err := app.blogs.create(data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -108,7 +108,7 @@ func (app *Application) edit(w http.ResponseWriter, r *http.Request, id int) {
 		return
 	}
 
-	blog, err := app.bm.update(id, data)
+	blog, err := app.blogs.update(id, data)
 	if err != nil {
 		if errors.Is(err, &BlogNotFoundError{}) {
 			http.NotFound(w, r)
@@ -128,7 +128,7 @@ func (app *Application) edit(w http.ResponseWriter, r *http.Request, id int) {
 
 // deletes a blog based on ID and returns it as a JSON
 func (app *Application) remove(w http.ResponseWriter, r *http.Request, id int) {
-	blog, err := app.bm.delete(id)
+	blog, err := app.blogs.delete(id)
 	if err != nil {
 		if errors.Is(err, &BlogNotFoundError{}) {
 			http.NotFound(w, r)

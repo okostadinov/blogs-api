@@ -18,14 +18,14 @@ type Blog struct {
 }
 
 type BlogsModel struct {
-	blogs []Blog
+	store []Blog
 }
 
 // retrieves a blog based on ID
-func (bm *BlogsModel) get(id int) (*Blog, error) {
-	for i, blog := range bm.blogs {
+func (m *BlogsModel) get(id int) (*Blog, error) {
+	for i, blog := range m.store {
 		if blog.ID == id {
-			return &bm.blogs[i], nil
+			return &m.store[i], nil
 		}
 	}
 
@@ -33,8 +33,8 @@ func (bm *BlogsModel) get(id int) (*Blog, error) {
 }
 
 // updates a blog based on provided data and returns it
-func (bm *BlogsModel) update(id int, data Blog) (*Blog, error) {
-	blog, err := bm.get(id)
+func (m *BlogsModel) update(id int, data Blog) (*Blog, error) {
+	blog, err := m.get(id)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func (bm *BlogsModel) update(id int, data Blog) (*Blog, error) {
 }
 
 // creates a blog based on provided data and returns it
-func (bm *BlogsModel) create(data Blog) (*Blog, error) {
+func (m *BlogsModel) create(data Blog) (*Blog, error) {
 	var blog Blog
 
 	switch {
@@ -73,21 +73,22 @@ func (bm *BlogsModel) create(data Blog) (*Blog, error) {
 		blog.Tags = data.Tags
 	}
 
-	if bm.blogs == nil {
+	if len(m.store) == 0 {
 		blog.ID = 1
 	} else {
-		blog.ID = bm.blogs[len(bm.blogs)-1].ID + 1
+		blog.ID = m.store[len(m.store)-1].ID + 1
 	}
 	blog.Created = time.Now().Format(DDMMYYYY)
-	bm.blogs = append(bm.blogs, blog)
+	m.store = append(m.store, blog)
+
 	return &blog, nil
 }
 
 // deletes a blog based on its ID
-func (bm *BlogsModel) delete(id int) (*Blog, error) {
-	for i, blog := range bm.blogs {
+func (m *BlogsModel) delete(id int) (*Blog, error) {
+	for i, blog := range m.store {
 		if blog.ID == id {
-			bm.blogs = slices.Delete(bm.blogs, i, i+1)
+			m.store = slices.Delete(m.store, i, i+1)
 			return &blog, nil
 		}
 	}

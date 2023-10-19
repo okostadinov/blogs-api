@@ -9,7 +9,7 @@ import (
 )
 
 type Application struct {
-	bm        BlogsModel
+	blogs     *BlogsModel
 	saveBlogs bool
 	tmpFile   *os.File
 }
@@ -21,6 +21,7 @@ func main() {
 	flag.Parse()
 
 	app := &Application{
+		blogs:     &BlogsModel{store: []Blog{}},
 		saveBlogs: *saveBlogs,
 	}
 
