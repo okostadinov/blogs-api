@@ -32,8 +32,13 @@ func (bm *BlogsModel) get(id int) (*Blog, error) {
 	return nil, &BlogNotFoundError{}
 }
 
-// updates a blog based on provided data
-func (bm *BlogsModel) update(blog *Blog, data Blog) {
+// updates a blog based on provided data and returns it
+func (bm *BlogsModel) update(id int, data Blog) (*Blog, error) {
+	blog, err := bm.get(id)
+	if err != nil {
+		return nil, err
+	}
+
 	switch {
 	case data.Title != "":
 		blog.Title = data.Title
@@ -44,10 +49,12 @@ func (bm *BlogsModel) update(blog *Blog, data Blog) {
 	case len(data.Tags) > 0:
 		blog.Tags = data.Tags
 	}
+
+	return blog, err
 }
 
 // creates a blog based on provided data and returns it
-func (bm *BlogsModel) create(data *Blog) (*Blog, error) {
+func (bm *BlogsModel) create(data Blog) (*Blog, error) {
 	var blog Blog
 
 	switch {

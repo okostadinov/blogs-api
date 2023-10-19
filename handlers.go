@@ -78,7 +78,7 @@ func (app *Application) add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	blog, err := app.bm.create(&data)
+	blog, err := app.bm.create(data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -108,7 +108,7 @@ func (app *Application) edit(w http.ResponseWriter, r *http.Request, id int) {
 		return
 	}
 
-	blog, err := app.bm.get(id)
+	blog, err := app.bm.update(id, data)
 	if err != nil {
 		if errors.Is(err, &BlogNotFoundError{}) {
 			http.NotFound(w, r)
@@ -118,7 +118,6 @@ func (app *Application) edit(w http.ResponseWriter, r *http.Request, id int) {
 		return
 	}
 
-	app.bm.update(blog, data)
 	payload, _ := json.MarshalIndent(&blog, "", "\t")
 	w.Write(payload)
 
