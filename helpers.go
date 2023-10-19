@@ -45,7 +45,7 @@ func (app *Application) save() {
 		app.tmpFile = tmp
 	}
 
-	payload, err := json.MarshalIndent(app.bm.blogs, "", "\t")
+	payload, err := json.MarshalIndent(app.blogs.store, "", "\t")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -63,7 +63,7 @@ func (app *Application) loadSample() {
 		log.Fatal(err)
 	}
 
-	err = json.Unmarshal(payload, &app.bm.blogs)
+	err = json.Unmarshal(payload, &app.blogs.store)
 	if err != nil {
 		log.Fatal(err)
 	}
