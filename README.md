@@ -3,7 +3,7 @@
 ### Description
 
 This is a simple RESTful JSON API built solely with Go's standard library.
-It supports the basic CRUD operations for fetching all blogs or a specific one, as well as creating, updating or deleting an existing blog.
+It supports the basic CRUD operations for working with the data model and its entities.
 
 ### Setup
 
