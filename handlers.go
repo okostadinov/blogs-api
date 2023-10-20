@@ -2,8 +2,9 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
+
+	"blogsapi.okostadinov.net/models"
 )
 
 // wrapper used to process the HTTP method and URL path in order to comply with REST principles
@@ -34,12 +35,13 @@ func (app *Application) blogsHandler(w http.ResponseWriter, r *http.Request) {
 
 // fetches all blogs and returns them as a JSON
 func (app *Application) list(w http.ResponseWriter, r *http.Request) {
-	if len(app.blogs.store) == 0 {
+	blogs, err := app.blogs.GetAll()
+	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
 
-	payload, err := json.MarshalIndent(app.blogs.store, "", "\t")
+	payload, err := json.MarshalIndent(blogs, "", "\t")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -49,13 +51,9 @@ func (app *Application) list(w http.ResponseWriter, r *http.Request) {
 
 // fetches a blog based on ID and returns it as a JSON
 func (app *Application) view(w http.ResponseWriter, r *http.Request, id int) {
-	blog, err := app.blogs.get(id)
+	blog, err := app.blogs.Get(id)
 	if err != nil {
-		if errors.Is(err, &BlogNotFoundError{}) {
-			http.NotFound(w, r)
-		} else {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
+		http.NotFound(w, r)
 		return
 	}
 
@@ -68,9 +66,9 @@ func (app *Application) view(w http.ResponseWriter, r *http.Request, id int) {
 	w.Write(payload)
 }
 
-// creates a new blog based on request body and returns it as JSON
+// .Creates a new blog based on request body and returns it as JSON
 func (app *Application) add(w http.ResponseWriter, r *http.Request) {
-	var data Blog
+	var data models.Blog
 
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
@@ -78,7 +76,7 @@ func (app *Application) add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	blog, err := app.blogs.create(data)
+	blog, err := app.blogs.Create(data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -98,9 +96,9 @@ func (app *Application) add(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// updates a blog based on ID and returns it as a JSON
+// .Updates a blog based on ID and returns it as a JSON
 func (app *Application) edit(w http.ResponseWriter, r *http.Request, id int) {
-	var data Blog
+	var data models.Blog
 
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
@@ -108,13 +106,9 @@ func (app *Application) edit(w http.ResponseWriter, r *http.Request, id int) {
 		return
 	}
 
-	blog, err := app.blogs.update(id, data)
+	blog, err := app.blogs.Update(id, data)
 	if err != nil {
-		if errors.Is(err, &BlogNotFoundError{}) {
-			http.NotFound(w, r)
-		} else {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
+		http.NotFound(w, r)
 		return
 	}
 
@@ -126,15 +120,11 @@ func (app *Application) edit(w http.ResponseWriter, r *http.Request, id int) {
 	}
 }
 
-// deletes a blog based on ID and returns it as a JSON
+// .Deletes a blog based on ID and returns it as a JSON
 func (app *Application) remove(w http.ResponseWriter, r *http.Request, id int) {
-	blog, err := app.blogs.delete(id)
+	blog, err := app.blogs.Delete(id)
 	if err != nil {
-		if errors.Is(err, &BlogNotFoundError{}) {
-			http.NotFound(w, r)
-		} else {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
+		http.NotFound(w, r)
 		return
 	}
 

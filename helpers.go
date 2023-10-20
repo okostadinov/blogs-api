@@ -17,12 +17,6 @@ var (
 	blogReg  = regexp.MustCompile(`^\/blogs\/(\d+)$`)
 )
 
-type BlogNotFoundError struct{}
-
-func (err *BlogNotFoundError) Error() string {
-	return "Blog not found"
-}
-
 // decorator used to extract the ID param from the url and call the specified handler passing it forward
 func idExtractor(w http.ResponseWriter, r *http.Request, fn func(w http.ResponseWriter, r *http.Request, id int)) {
 	id, err := strconv.Atoi(path.Base(r.URL.Path))
@@ -45,7 +39,7 @@ func (app *Application) save() {
 		app.tmpFile = tmp
 	}
 
-	payload, err := json.MarshalIndent(app.blogs.store, "", "\t")
+	payload, err := json.MarshalIndent(app.blogs.Store, "", "\t")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -63,7 +57,7 @@ func (app *Application) loadSample() {
 		log.Fatal(err)
 	}
 
-	err = json.Unmarshal(payload, &app.blogs.store)
+	err = json.Unmarshal(payload, &app.blogs.Store)
 	if err != nil {
 		log.Fatal(err)
 	}

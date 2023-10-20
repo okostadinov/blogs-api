@@ -11,6 +11,7 @@ It supports the basic CRUD operations for fetching all blogs or a specific one, 
 * `cd` into the project dir
 * to run a temporary instance: `go run .`
 * to build an executable: `go build .`
+* to run the tests: `go test ./...`
 
 ### Usage
 
@@ -18,9 +19,9 @@ It supports the basic CRUD operations for fetching all blogs or a specific one, 
 ```
 curl http://localhost:4000/blogs
 ```
-* fetch second blog
+* fetch a particular blog
 ```
-curl http://localhost:4000/blogs/2
+curl http://localhost:4000/blogs/{id}
 ```
 * create a new blog
 ```
@@ -31,14 +32,14 @@ curl http://localhost:4000/blogs \
 ```
 * update an existing blog
 ```
-curl http://localhost:4000/blogs/1 \
+curl http://localhost:4000/blogs/{id} \
 --include \
 --request "PUT" \
 --data '{"title": "updated title"}'
 ```
 * delete a blog
 ```
-curl http://localhost:4000/blogs/3 \
+curl http://localhost:4000/blogs/{id} \
 --include \
 --request "DELETE"
 ```

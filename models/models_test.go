@@ -1,6 +1,7 @@
-package main
+package models
 
 import (
+	"errors"
 	"reflect"
 	"testing"
 	"time"
@@ -30,47 +31,66 @@ var (
 
 func TestBlogModel(t *testing.T) {
 	t.Run("create blog success", func(t *testing.T) {
-		testApp := prepareTestApp()
+		m := &BlogsModel{Store: []Blog{}}
 
-		got, _ := testApp.blogs.create(*testDataValid)
+		got, _ := m.Create(*testDataValid)
 		want := testBlogValid
 
 		validateTest(t, got, want)
 	})
 
 	t.Run("create blog fail", func(t *testing.T) {
-		testApp := prepareTestApp()
+		m := &BlogsModel{Store: []Blog{}}
 
-		_, err := testApp.blogs.create(*testDataInvalid)
-		want := "Blog title is required"
+		_, err := m.Create(*testDataInvalid)
+		want := errors.New("Blog title is required")
 
-		validateTest(t, err.Error(), want)
+		validateTest(t, err, want)
+	})
+
+	t.Run("get all blogs success", func(t *testing.T) {
+		m := &BlogsModel{Store: []Blog{}}
+		m.Create(*testDataValid)
+
+		got, _ := m.GetAll()
+		want := []Blog{*testBlogValid}
+
+		validateTest(t, &got, &want)
+	})
+
+	t.Run("get all blogs fail", func(t *testing.T) {
+		m := &BlogsModel{Store: []Blog{}}
+
+		_, err := m.GetAll()
+		want := ErrNoRecord
+
+		validateTest(t, err, want)
 	})
 
 	t.Run("get blog success", func(t *testing.T) {
-		testApp := prepareTestApp()
-		testApp.blogs.create(*testDataValid)
+		m := &BlogsModel{Store: []Blog{}}
+		m.Create(*testDataValid)
 
-		got, _ := testApp.blogs.get(1)
+		got, _ := m.Get(1)
 		want := testBlogValid
 
 		validateTest(t, got, want)
 	})
 
 	t.Run("get blog fail", func(t *testing.T) {
-		testApp := prepareTestApp()
+		m := &BlogsModel{Store: []Blog{}}
 
-		_, err := testApp.blogs.get(1)
-		want := &BlogNotFoundError{}
+		_, err := m.Get(1)
+		want := ErrNoRecord
 
-		validateTest(t, err.Error(), want.Error())
+		validateTest(t, err, want)
 	})
 
 	t.Run("update blog success", func(t *testing.T) {
-		testApp := prepareTestApp()
-		testApp.blogs.create(*testDataValid)
+		m := &BlogsModel{Store: []Blog{}}
+		m.Create(*testDataValid)
 
-		got, _ := testApp.blogs.update(1, Blog{Title: "updated"})
+		got, _ := m.Update(1, Blog{Title: "updated"})
 		want := &Blog{
 			ID:      1,
 			Title:   "updated",
@@ -84,38 +104,32 @@ func TestBlogModel(t *testing.T) {
 	})
 
 	t.Run("update blog fail", func(t *testing.T) {
-		testApp := prepareTestApp()
+		m := &BlogsModel{Store: []Blog{}}
 
-		_, err := testApp.blogs.update(1, Blog{Title: "updated"})
-		want := &BlogNotFoundError{}
+		_, err := m.Update(1, Blog{Title: "updated"})
+		want := ErrNoRecord
 
-		validateTest(t, err.Error(), want.Error())
+		validateTest(t, err, want)
 	})
 
 	t.Run("remove blog success", func(t *testing.T) {
-		testApp := prepareTestApp()
-		testApp.blogs.create(*testDataValid)
+		m := &BlogsModel{Store: []Blog{}}
+		m.Create(*testDataValid)
 
-		got, _ := testApp.blogs.delete(1)
+		got, _ := m.Delete(1)
 		want := testBlogValid
 
 		validateTest(t, got, want)
 	})
 
 	t.Run("remove blog fail", func(t *testing.T) {
-		testApp := prepareTestApp()
+		m := &BlogsModel{Store: []Blog{}}
 
-		_, err := testApp.blogs.delete(1)
-		want := &BlogNotFoundError{}
+		_, err := m.Delete(1)
+		want := ErrNoRecord
 
-		validateTest(t, err.Error(), want.Error())
+		validateTest(t, err, want)
 	})
-}
-
-func prepareTestApp() *Application {
-	return &Application{
-		blogs: &BlogsModel{store: []Blog{}},
-	}
 }
 
 func validateTest[T comparable](t *testing.T, got, want T) {

@@ -1,4 +1,4 @@
-package main
+package models
 
 import (
 	"fmt"
@@ -18,23 +18,32 @@ type Blog struct {
 }
 
 type BlogsModel struct {
-	store []Blog
+	Store []Blog
 }
 
 // retrieves a blog based on ID
-func (m *BlogsModel) get(id int) (*Blog, error) {
-	for i, blog := range m.store {
+func (m *BlogsModel) Get(id int) (*Blog, error) {
+	for i, blog := range m.Store {
 		if blog.ID == id {
-			return &m.store[i], nil
+			return &m.Store[i], nil
 		}
 	}
 
-	return nil, &BlogNotFoundError{}
+	return nil, ErrNoRecord
+}
+
+// returns the whole blogs slice
+func (m *BlogsModel) GetAll() ([]Blog, error) {
+	if len(m.Store) == 0 {
+		return m.Store, ErrNoRecord
+	}
+
+	return m.Store, nil
 }
 
 // updates a blog based on provided data and returns it
-func (m *BlogsModel) update(id int, data Blog) (*Blog, error) {
-	blog, err := m.get(id)
+func (m *BlogsModel) Update(id int, data Blog) (*Blog, error) {
+	blog, err := m.Get(id)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +63,7 @@ func (m *BlogsModel) update(id int, data Blog) (*Blog, error) {
 }
 
 // creates a blog based on provided data and returns it
-func (m *BlogsModel) create(data Blog) (*Blog, error) {
+func (m *BlogsModel) Create(data Blog) (*Blog, error) {
 	var blog Blog
 
 	switch {
@@ -73,25 +82,25 @@ func (m *BlogsModel) create(data Blog) (*Blog, error) {
 		blog.Tags = data.Tags
 	}
 
-	if len(m.store) == 0 {
+	if len(m.Store) == 0 {
 		blog.ID = 1
 	} else {
-		blog.ID = m.store[len(m.store)-1].ID + 1
+		blog.ID = m.Store[len(m.Store)-1].ID + 1
 	}
 	blog.Created = time.Now().Format(DDMMYYYY)
-	m.store = append(m.store, blog)
+	m.Store = append(m.Store, blog)
 
 	return &blog, nil
 }
 
 // deletes a blog based on its ID
-func (m *BlogsModel) delete(id int) (*Blog, error) {
-	for i, blog := range m.store {
+func (m *BlogsModel) Delete(id int) (*Blog, error) {
+	for i, blog := range m.Store {
 		if blog.ID == id {
-			m.store = slices.Delete(m.store, i, i+1)
+			m.Store = slices.Delete(m.Store, i, i+1)
 			return &blog, nil
 		}
 	}
 
-	return nil, &BlogNotFoundError{}
+	return nil, ErrNoRecord
 }
