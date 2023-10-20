@@ -6,10 +6,12 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"blogsapi.okostadinov.net/models"
 )
 
 type Application struct {
-	blogs     *BlogsModel
+	blogs     *models.BlogsModel
 	saveBlogs bool
 	tmpFile   *os.File
 }
@@ -21,7 +23,7 @@ func main() {
 	flag.Parse()
 
 	app := &Application{
-		blogs:     &BlogsModel{store: []Blog{}},
+		blogs:     &models.BlogsModel{Store: []models.Blog{}},
 		saveBlogs: *saveBlogs,
 	}
 
