@@ -7,34 +7,12 @@ import (
 	"time"
 )
 
-var (
-	testDataValid = &Blog{
-		Title:  "Test 1",
-		Body:   "lorem ipsum",
-		Author: "me",
-		Tags:   []string{"tag"},
-	}
-	testDataInvalid = &Blog{
-		Body:   "lorem ipsum",
-		Author: "me",
-		Tags:   []string{"tag"},
-	}
-	testBlogValid = &Blog{
-		ID:      1,
-		Title:   "Test 1",
-		Body:    "lorem ipsum",
-		Author:  "me",
-		Created: time.Now().Format(DDMMYYYY),
-		Tags:    []string{"tag"},
-	}
-)
-
 func TestBlogModel(t *testing.T) {
 	t.Run("create blog success", func(t *testing.T) {
 		m := &BlogsModel{Store: []Blog{}}
 
-		got, _ := m.Create(*testDataValid)
-		want := testBlogValid
+		got, _ := m.Create(*TestDataValid)
+		want := TestBlogValid
 
 		validateTest(t, got, want)
 	})
@@ -42,23 +20,23 @@ func TestBlogModel(t *testing.T) {
 	t.Run("create blog fail", func(t *testing.T) {
 		m := &BlogsModel{Store: []Blog{}}
 
-		_, err := m.Create(*testDataInvalid)
+		_, err := m.Create(*TestDataInvalid)
 		want := errors.New("Blog title is required")
 
 		validateTest(t, err, want)
 	})
 
-	t.Run("get all blogs success", func(t *testing.T) {
+	t.Run("get all blogs", func(t *testing.T) {
 		m := &BlogsModel{Store: []Blog{}}
-		m.Create(*testDataValid)
+		m.Create(*TestDataValid)
 
 		got, _ := m.GetAll()
-		want := []Blog{*testBlogValid}
+		want := []Blog{*TestBlogValid}
 
 		validateTest(t, &got, &want)
 	})
 
-	t.Run("get all blogs fail", func(t *testing.T) {
+	t.Run("get an empty blogs store", func(t *testing.T) {
 		m := &BlogsModel{Store: []Blog{}}
 
 		_, err := m.GetAll()
@@ -67,17 +45,17 @@ func TestBlogModel(t *testing.T) {
 		validateTest(t, err, want)
 	})
 
-	t.Run("get blog success", func(t *testing.T) {
+	t.Run("get an existing blog", func(t *testing.T) {
 		m := &BlogsModel{Store: []Blog{}}
-		m.Create(*testDataValid)
+		m.Create(*TestDataValid)
 
 		got, _ := m.Get(1)
-		want := testBlogValid
+		want := TestBlogValid
 
 		validateTest(t, got, want)
 	})
 
-	t.Run("get blog fail", func(t *testing.T) {
+	t.Run("get a nonexistant blog", func(t *testing.T) {
 		m := &BlogsModel{Store: []Blog{}}
 
 		_, err := m.Get(1)
@@ -86,9 +64,9 @@ func TestBlogModel(t *testing.T) {
 		validateTest(t, err, want)
 	})
 
-	t.Run("update blog success", func(t *testing.T) {
+	t.Run("update an existing blog", func(t *testing.T) {
 		m := &BlogsModel{Store: []Blog{}}
-		m.Create(*testDataValid)
+		m.Create(*TestDataValid)
 
 		got, _ := m.Update(1, Blog{Title: "updated"})
 		want := &Blog{
@@ -103,7 +81,7 @@ func TestBlogModel(t *testing.T) {
 		validateTest(t, got, want)
 	})
 
-	t.Run("update blog fail", func(t *testing.T) {
+	t.Run("update a nonexistant blog", func(t *testing.T) {
 		m := &BlogsModel{Store: []Blog{}}
 
 		_, err := m.Update(1, Blog{Title: "updated"})
@@ -112,17 +90,17 @@ func TestBlogModel(t *testing.T) {
 		validateTest(t, err, want)
 	})
 
-	t.Run("remove blog success", func(t *testing.T) {
+	t.Run("remove an existing blog", func(t *testing.T) {
 		m := &BlogsModel{Store: []Blog{}}
-		m.Create(*testDataValid)
+		m.Create(*TestDataValid)
 
 		got, _ := m.Delete(1)
-		want := testBlogValid
+		want := TestBlogValid
 
 		validateTest(t, got, want)
 	})
 
-	t.Run("remove blog fail", func(t *testing.T) {
+	t.Run("remove a nonexistant blog", func(t *testing.T) {
 		m := &BlogsModel{Store: []Blog{}}
 
 		_, err := m.Delete(1)
@@ -133,6 +111,8 @@ func TestBlogModel(t *testing.T) {
 }
 
 func validateTest[T comparable](t *testing.T, got, want T) {
+	t.Helper()
+
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("got %v; want %v", got, want)
 	}
